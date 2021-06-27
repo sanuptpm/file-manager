@@ -31,7 +31,7 @@ def evn_shows():
     except Exception as e:
         return jsonify({'error': str(e),
                         'status': 500,
-                        'message': 'Somthing went wrong'})
+                        'message': 'Something went wrong'})
 
 
 @app.route('/files', methods=['POST'])
@@ -46,11 +46,11 @@ def create_file():
             return jsonify({
                 'error': str(e),
                 'status': 400,
-                'message': 'Invaild input/ empty value'})
+                'message': 'Invalid input/ empty value'})
         if not name or not data:
             return jsonify({
                 'status': 400,
-                'message': 'Invaild input/ empty value'})
+                'message': 'Invalid input/ empty value'})
         else:
             # go to test folder
             filepath = os.path.join(constants.FILE_PATH, name_of_file)
@@ -80,35 +80,54 @@ def create_file():
     except Exception as e:
         return jsonify({'error': str(e),
                         'status': 500,
-                        'message': 'Somthing went wrong'})
+                        'message': 'Something went wrong'})
 
 
 @app.route('/files', methods=['GET'])
 def get_all_files():
     try:
         os.chdir(constants.FILE_PATH)
-        count = str(len(fnmatch.filter(os.listdir(), '*.txt')))
+        files = fnmatch.filter(os.listdir(), '*.txt')
         return jsonify({
-            'count': count,
+            'files': files,
             'status': 200,
             'message': 'successfully listed'})
     except Exception as e:
         return jsonify({'error': str(e),
                         'status': 500,
-                        'message': 'Somthing went wrong'})
+                        'message': 'Something went wrong'})
 
 
 @app.route('/files/<string:name>', methods=['GET'])
 def get_file_content(name):
     try:
-        return jsonify({
-            'id': name,
-            'status': 200,
-            'message': 'successfully listed'})
+        os.chdir(constants.FILE_PATH)
+        file = os.path.exists(name + ".txt")
+        try:
+            if not file:
+                return jsonify({
+                    'name': name + ".txt",
+                    'status': 404,
+                    'message': 'file not exist'})
+            else:
+                f = open(name + ".txt")
+                content = str(f.read())
+                f.close()
+                return jsonify({
+                    "file_name": name + ".txt",
+                    'content': content,
+                    'status': 200,
+                    'message': 'successfully updated'})
+
+        except Exception as e:
+            return jsonify({'error': str(e),
+                            'status': 404,
+                            'message': 'Something went wrong'})
+
     except Exception as e:
         return jsonify({'error': str(e),
                         'status': 500,
-                        'message': 'Somthing went wrong'})
+                        'message': 'Something went wrong'})
 
 
 @app.route('/files/<string:name>', methods=['DELETE'])
@@ -132,12 +151,12 @@ def delete_file(name):
         except Exception as e:
             return jsonify({'error': str(e),
                             'status': 404,
-                            'message': 'Somthing went wrong'})
+                            'message': 'Something went wrong'})
 
     except Exception as e:
         return jsonify({'error': str(e),
                         'status': 500,
-                        'message': 'Somthing went wrong'})
+                        'message': 'Something went wrong'})
 
 
 @app.route('/files/<string:name>', methods=['PATCH'])
@@ -163,12 +182,12 @@ def patch_file(name):
         except Exception as e:
             return jsonify({'error': str(e),
                             'status': 404,
-                            'message': 'Somthing went wrong'})
+                            'message': 'Something went wrong'})
 
     except Exception as e:
         return jsonify({'error': str(e),
                         'status': 500,
-                        'message': 'Somthing went wrong'})
+                        'message': 'Something went wrong'})
 
 
 @app.route('/files/<string:name>', methods=['PUT'])
@@ -196,12 +215,12 @@ def update_file(name):
         except Exception as e:
             return jsonify({'error': str(e),
                             'status': 404,
-                            'message': 'Somthing went wrong'})
+                            'message': 'Something went wrong'})
 
     except Exception as e:
         return jsonify({'error': str(e),
                         'status': 500,
-                        'message': 'Somthing went wrong'})
+                        'message': 'Something went wrong'})
 
 
 if __name__ == "__main__":
