@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 import os.path
-import  constants
+import constants
 import fnmatch
 
 app = Flask(__name__)
@@ -29,9 +29,7 @@ def evn_shows():
         else:
             return 'Remote address not set'
     except Exception as e:
-        return jsonify({'error': str(e),
-                        'status': 500,
-                        'message': 'Something went wrong'})
+        return jsonify(error=str(e), message="Something went wrong"), 500
 
 
 @app.route('/files', methods=['POST'])
@@ -43,14 +41,9 @@ def create_file():
             data = request_data['data']
             name_of_file = name + '.txt'
         except Exception as e:
-            return jsonify({
-                'error': str(e),
-                'status': 400,
-                'message': 'Invalid input/ empty value'})
+            return jsonify(error=str(e), message="Invalid input/ empty value"), 400
         if not name or not data:
-            return jsonify({
-                'status': 400,
-                'message': 'Invalid input/ empty value'})
+            return jsonify(message="Invalid input/ empty value"), 400
         else:
             # go to test folder
             filepath = os.path.join(constants.FILE_PATH, name_of_file)
@@ -60,10 +53,7 @@ def create_file():
             os.chdir(constants.FILE_PATH)
             # check file exist
             if os.path.isfile(name_of_file):
-                return jsonify({
-                    'name': name_of_file,
-                    'status': 409,
-                    'message': 'file name already exist'})
+                return jsonify(name=str(name_of_file), message="File name already exist"), 409
             else:
                 try:
                     f = open(filepath, "w")
@@ -71,156 +61,94 @@ def create_file():
                 except Exception as e:
                     raise Exception(str(e))
                 finally:
-                    print("-------in finally---------------")
                     f.close()
-                return jsonify({
-                    'name': name_of_file,
-                    'status': 200,
-                    'message': 'successfully created'})
+                return jsonify(name=str(name_of_file), message="Successfully listed"), 200
     except Exception as e:
-        return jsonify({'error': str(e),
-                        'status': 500,
-                        'message': 'Something went wrong'})
+        return jsonify(error=str(e), message="Something went wrong"), 500
 
 
 @app.route('/files', methods=['GET'])
 def get_all_files():
     try:
         os.chdir(constants.FILE_PATH)
-        files = fnmatch.filter(os.listdir(), '*.txt')
-        return jsonify({
-            'files': files,
-            'status': 200,
-            'message': 'successfully listed'})
+        try:
+            files = fnmatch.filter(os.listdir(), '*.txt')
+        except Exception as e:
+            raise Exception(str(e))
+        return jsonify(files=str(files), message="Successfully listed"), 200
     except Exception as e:
-        return jsonify({'error': str(e),
-                        'status': 500,
-                        'message': 'Something went wrong'})
+        return jsonify(error=str(e), message="Something went wrong"), 500
 
 
 @app.route('/files/<string:name>', methods=['GET'])
 def get_file_content(name):
     try:
         os.chdir(constants.FILE_PATH)
-        file = os.path.exists(name + ".txt")
+        f = None
         try:
-            if not file:
-                return jsonify({
-                    'name': name + ".txt",
-                    'status': 404,
-                    'message': 'file not exist'})
-            else:
-                f = open(name + ".txt")
-                content = str(f.read())
-                f.close()
-                return jsonify({
-                    "file_name": name + ".txt",
-                    'content': content,
-                    'status': 200,
-                    'message': 'successfully updated'})
-
+            f = open(name + ".txt")
+            content = str(f.read())
         except Exception as e:
-            return jsonify({'error': str(e),
-                            'status': 404,
-                            'message': 'Something went wrong'})
-
+            return jsonify(error=str(e), message="File not exist"), 404
+        finally:
+            if f is not None:
+                f.close()
+                return jsonify(name=str(name + ".txt"), content=str(content), message="Successfully listed"), 200
+            else:
+                return jsonify(message="file name not exist"), 404
     except Exception as e:
-        return jsonify({'error': str(e),
-                        'status': 500,
-                        'message': 'Something went wrong'})
+        return jsonify(error=str(e), message="Something went wrong"), 500
 
 
 @app.route('/files/<string:name>', methods=['DELETE'])
 def delete_file(name):
     try:
         os.chdir(constants.FILE_PATH)
-        file = os.path.exists(name+".txt")
         try:
-            if not file:
-                return jsonify({
-                    'name': name + ".txt",
-                    'status': 404,
-                    'message': 'file not exist'})
-            else:
-                os.remove(name+".txt")
-                return jsonify({
-                    'id': name,
-                    'status': 200,
-                    'message': 'successfully deleted'})
-
+            os.remove(name + ".txt")
+            return jsonify(name=str(name), message="Successfully deleted"), 200
         except Exception as e:
-            return jsonify({'error': str(e),
-                            'status': 404,
-                            'message': 'Something went wrong'})
-
+            return jsonify(error=str(e), message="File not exist"), 404
     except Exception as e:
-        return jsonify({'error': str(e),
-                        'status': 500,
-                        'message': 'Something went wrong'})
+        return jsonify(error=str(e), message="Something went wrong"), 500
 
 
 @app.route('/files/<string:name>', methods=['PATCH'])
 def patch_file(name):
     try:
         os.chdir(constants.FILE_PATH)
-        file = os.path.exists(name+".txt")
-        request_data = request.get_json()
         try:
+            request_data = request.get_json()
             rename = request_data['name']
-            if not file:
-                return jsonify({
-                    'name': name + ".txt",
-                    'status': 404,
-                    'message': 'file not exist'})
-            else:
-                os.rename(name + ".txt", rename+".txt")
-                return jsonify({
-                    'id': name,
-                    'status': 200,
-                    'message': 'successfully updated file name'})
-
+            os.rename(name + ".txt", rename + ".txt")
+            return jsonify(name=str(name), message="successfully updated file name"), 200
         except Exception as e:
-            return jsonify({'error': str(e),
-                            'status': 404,
-                            'message': 'Something went wrong'})
-
+            return jsonify(error=str(e), message="file name not exist"), 404
     except Exception as e:
-        return jsonify({'error': str(e),
-                        'status': 500,
-                        'message': 'Something went wrong'})
+        return jsonify(error=str(e), message="Something went wrong"), 500
 
 
 @app.route('/files/<string:name>', methods=['PUT'])
 def update_file(name):
     try:
         os.chdir(constants.FILE_PATH)
-        file = os.path.exists(name+".txt")
-        request_data = request.get_json()
-        try:
-            data = request_data['data']
-            if not file:
-                return jsonify({
-                    'name': name + ".txt",
-                    'status': 404,
-                    'message': 'file not exist'})
-            else:
+        if os.path.exists(constants.FILE_PATH + '/' + name + '.txt'):
+            f = None
+            try:
+                request_data = request.get_json()
+                data = request_data['data']
                 f = open(name + ".txt", "w")
                 f.write(data)
-                f.close()
-                return jsonify({
-                    'id': name,
-                    'status': 200,
-                    'message': 'successfully updated'})
-
-        except Exception as e:
-            return jsonify({'error': str(e),
-                            'status': 404,
-                            'message': 'Something went wrong'})
-
+            except Exception as e:
+                raise Exception(str(e))
+            finally:
+                if f is not None:
+                    f.close()
+                return jsonify(name=str(name), message="successfully updated file name"), 200
+        else:
+            return jsonify(message="file name not exist"), 404
     except Exception as e:
-        return jsonify({'error': str(e),
-                        'status': 500,
-                        'message': 'Something went wrong'})
+        return jsonify(error=str(e), message="Something went wrong"), 500
 
 
 if __name__ == "__main__":
