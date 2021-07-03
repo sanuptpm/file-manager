@@ -32,6 +32,7 @@ def test_get_files(mock_chdir, mock_listdir, client):
     print("get_data 1111 >>>>", res.get_data())
     assert res.status_code == 200
 
+
 @patch('app.os.chdir')
 @patch('app.open')
 def test_get_file_content(mock_file, mock_chdir, client):
@@ -39,6 +40,7 @@ def test_get_file_content(mock_file, mock_chdir, client):
     res = client.get('/files/abc')
     print("get_data 1111 >>>>", res.get_data(), res.status_code)
     assert res.status_code == 404
+
 
 @patch('app.os.chdir')
 @patch('app.os.remove')
@@ -48,6 +50,7 @@ def test_delete_file(mock_file, mock_chdir, client):
 
     print("get_data 1111 >>>>", res.get_data(), res.status_code, res)
     assert res.status_code == 404
+
 
 @patch('app.os.chdir')
 @patch('app.os.rename')
@@ -66,3 +69,10 @@ def test_update_file(mock_rename, mock_chdir, mock_file, client):
     res = client.put('/files/my', json={'data': 'updated data'})
     """ res.get_data() res.status_code """
     assert res.status_code == 404
+
+
+@patch('app.SECRET_KEY')
+def test_get_env(mock_key, client):
+    mock_key.return_value = 'SECRET_KEY'
+    res = client.get('/env')
+    print("UUUUUUUUU", res.get_data())

@@ -13,7 +13,7 @@ def get_port():
     port = os.environ.get("PORT")
     if not port:
         port = 4000
-    return 4000
+    return port
 
 
 @app.route("/")
@@ -22,7 +22,7 @@ def index():
 
 
 @app.route("/env")
-def evn_shows():
+def get_env():
     try:
         if SECRET_KEY:
             return "Remote address : " + SECRET_KEY
