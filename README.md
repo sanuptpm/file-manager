@@ -5,3 +5,6 @@ $ python3 app.py
 $ pytest -s -v
 # To run unittest
 $ pytest
+
+# get test report 
+$ pytest --cov-report term-missing --cov=app test_app.py 
