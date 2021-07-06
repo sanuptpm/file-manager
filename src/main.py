@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify
 import os.path
 import fnmatch
-
+from src.constants import cmn_constant
 
 app = Flask(__name__)
 f = None
@@ -50,11 +50,11 @@ def create_file():
         except Exception as e:
             return jsonify(error=str(e), message="Invalid input/ empty value"), 400
         # go to test folder
-        filepath = os.path.join(constants.FILE_PATH, name_of_file)
-        if not os.path.exists(constants.FILE_PATH):
+        filepath = os.path.join(cmn_constant.FILE_PATH, name_of_file)
+        if not os.path.exists(cmn_constant.FILE_PATH):
             os.umask(0)
-            os.makedirs(constants.FILE_PATH, mode=0o777)
-        os.chdir(constants.FILE_PATH)
+            os.makedirs(cmn_constant.FILE_PATH, mode=0o777)
+        os.chdir(cmn_constant.FILE_PATH)
         # check file exist
         if os.path.isfile(name_of_file):
             return jsonify(name=str(name_of_file), message="File name already exist"), 409
@@ -74,7 +74,7 @@ def create_file():
 @app.route('/files', methods=['GET'])
 def get_all_files():
     try:
-        os.chdir(constants.FILE_PATH)
+        os.chdir(cmn_constant.FILE_PATH)
         try:
             files = fnmatch.filter(os.listdir(), '*.txt')
         except Exception as e:
@@ -87,7 +87,7 @@ def get_all_files():
 @app.route('/files/<string:name>', methods=['GET'])
 def get_file_content(name):
     try:
-        os.chdir(constants.FILE_PATH)
+        os.chdir(cmn_constant.FILE_PATH)
         try:
             file = open(name + ".txt")
             content = str(file.read())
@@ -104,7 +104,7 @@ def get_file_content(name):
 @app.route('/files/<string:name>', methods=['DELETE'])
 def delete_file(name):
     try:
-        os.chdir(constants.FILE_PATH)
+        os.chdir(cmn_constant.FILE_PATH)
         try:
             os.remove(name + ".txt")
             return jsonify(name=str(name), message="Successfully deleted"), 200
@@ -117,7 +117,7 @@ def delete_file(name):
 @app.route('/files/<string:name>', methods=['PATCH'])
 def patch_file(name):
     try:
-        os.chdir(constants.FILE_PATH)
+        os.chdir(cmn_constant.FILE_PATH)
         try:
             request_data = get_request()
             rename = request_data['name']
@@ -132,8 +132,8 @@ def patch_file(name):
 @app.route('/files/<string:name>', methods=['PUT'])
 def update_file(name):
     try:
-        os.chdir(constants.FILE_PATH)
-        if os.path.exists(constants.FILE_PATH + '/' + name + '.txt'):
+        os.chdir(cmn_constant.FILE_PATH)
+        if os.path.exists(cmn_constant.FILE_PATH + '/' + name + '.txt'):
             f = None
             try:
                 request_data = get_request()
