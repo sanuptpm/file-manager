@@ -1,9 +1,11 @@
 import json
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch
-from app import app as flask_app, get_port, get_secret_key, get_request
-from file import FileOpenMock
+
+from application import app as flask_app
+from application.app import get_port, get_secret_key
+from application.file import FileOpenMock
 
 
 @pytest.fixture

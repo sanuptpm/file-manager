@@ -1,11 +1,10 @@
 import os
 from flask import Flask, request, jsonify
 import os.path
-import constants
 import fnmatch
 
-app = Flask(__name__)
 
+app = Flask(__name__)
 f = None
 
 
