@@ -2,7 +2,8 @@ import os
 from flask import Flask, request, jsonify
 import os.path
 import fnmatch
-from src.constants import cmn_constant
+
+from constants import cmn_constant
 
 app = Flask(__name__)
 f = None
