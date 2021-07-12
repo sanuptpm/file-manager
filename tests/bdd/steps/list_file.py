@@ -38,5 +38,4 @@ def step_searching_for_file_listing(context):
 
 @then('nothing will show')
 def step_searching_for_file_listing(context):
-    print("fffffffffff", context.status_code, len(context.response_body['files']), context.response_body['files'])
     assert context.status_code == 200
