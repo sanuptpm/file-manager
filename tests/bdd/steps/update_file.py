@@ -2,17 +2,20 @@ import requests
 from behave import *
 
 
-@given("get update file name{file_name}")
+@given("get file name for update{file_name}")
 def step_update_file(context, file_name):
     context.file_name = file_name
+
+
+@given("create a file for update")
+def step_update_file(context):
     response = requests.post('http://0.0.0.0:4000/files', json={
         "data": "New file created",
         "name": context.file_name
     })
-    assert response.status_code == 200
 
 
-@when('update existing file')
+@when('update existing file content')
 def step_update_file(context):
     response = requests.put('http://0.0.0.0:4000/files/' + context.file_name, json={
         "data": " Description is the pattern  of the four basic modes. "
@@ -33,6 +36,7 @@ def step_delete_exist_file_create(context):
 
 @given("get update none existing file name {file_name}")
 def step_update_file(context, file_name):
+
     context.file_name = file_name
 
 
@@ -46,6 +50,7 @@ def step_update_file(context):
 
 @then('show update status of none existing')
 def step_update_status(context):
+
     assert context.status_code == 404
 
 

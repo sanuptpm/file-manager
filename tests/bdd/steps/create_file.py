@@ -2,7 +2,7 @@ import requests
 from behave import *
 
 
-@given("get create input {file_name}")
+@given("accept file name for file creation {file_name}")
 def step_get_create_file(context, file_name):
     context.file_name = file_name
 
@@ -17,7 +17,7 @@ def step_create_file_with_name(context):
     context.status_code = response.status_code
 
 
-@then('show create status')
+@then('show create file status')
 def step_show_create_file_status(context):
     assert context.status_code == 200
 
@@ -48,7 +48,7 @@ def step_recreate_exist_file(context):
     assert context.status_code == 409
 
 
-@then('already exist create file status')
+@then('show status for already created file')
 def step_show_exist_file_status(context):
     assert context.status_code == 409
 
@@ -59,7 +59,7 @@ def step_delete_exist_file_create(context):
     assert response.status_code == 200
 
 
-@given("get file name input for invalid data {file_name}")
+@given("get file name for file creation with invalid data {file_name}")
 def step_get_create_file(context, file_name):
     context.file_name = file_name
 

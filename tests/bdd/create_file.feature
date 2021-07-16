@@ -1,10 +1,10 @@
 Feature: Create file
 
-  @file.new_file_created
-  Scenario Outline: successfully create file
-    Given get create input <file_name>
+  @file.created_new_file
+  Scenario Outline: create new file
+    Given accept file name for file creation <file_name>
     When  create new file
-    Then  show create status
+    Then  show create file status
 
 
     Examples:
@@ -13,10 +13,10 @@ Feature: Create file
     Then delete created file
 
   @file.create_file_already_exist
-  Scenario Outline: already created file
+  Scenario Outline: try to create already existing file
     Given already exist create input <file_name>
     When try to create new file with existing file name
-    Then already exist create file status
+    Then show status for already created file
 
 
     Examples:
@@ -26,10 +26,10 @@ Feature: Create file
 
 
   @file.create_file_with_invalid_data
-  Scenario Outline: create file with invalid data
-    Given get file name input for invalid data <file_name>
+  Scenario Outline: try to create file with invalid data
+    Given get file name for file creation with invalid data <file_name>
     When try to create new file with invalid data
-    Then get error status
+    Then show status
     Examples:
       | file_name |
       | new       |

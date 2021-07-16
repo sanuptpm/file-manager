@@ -2,29 +2,32 @@ import requests
 from behave import *
 
 
-@given("get delete input {input}")
+@given("get file name for delete {input}")
 def step_searching_for_file(context, input):
+    context.name = input
+
+
+@given("create new file for delete")
+def step_searching_for_file(context):
     response = requests.post('http://0.0.0.0:4000/files', json={
         "data": "New file created",
-        "name": input
+        "name": context.name
     })
-    context.name = input
-    assert response.status_code == 200
 
 
-@when('create delete file')
+@when('delete existing file')
 def step_delete_file(context):
     response = requests.delete('http://0.0.0.0:4000/files/' + context.name)
     context.response_body = response.json()
     context.status_code = response.status_code
 
 
-@then('delete file')
+@then('show delete file status')
 def step_show_success(context):
     assert context.status_code == 200
 
 
-@given("get delete file name {input}")
+@given("get data for delete file {input}")
 def step_searching_for_file(context, input):
     context.name = input
 

@@ -2,9 +2,10 @@ Feature: Delete file
 
   @file.deleted
   Scenario Outline: File successfully deleted
-    Given get delete input <input>
-    When create delete file
-    Then delete file
+    Given get file name for delete <input>
+    And create new file for delete
+    When delete existing file
+    Then show delete file status
 
 
     Examples:
@@ -14,7 +15,7 @@ Feature: Delete file
 
   @file.not_exist_for_delete
   Scenario Outline: File not existed
-    Given get delete file name <input>
+    Given get data for delete file <input>
     When no matching files found for delete
     Then show file not found status for delete
 
